@@ -1,0 +1,12 @@
+# Use PyTorch's wheelhouse as an additional source
+# * comment if you use GPU Torch 2.7.1 + Cuda 12.8
+#  - install using pip
+#    # pip install torch --index-url https://download.pytorch.org/whl/cu128
+#  - or just uncomment bellow and force --extra-index-url
+#    # pip install -r requirements.inference.txt
+# --extra-index-url https://download.pytorch.org/whl/cu128
+torch
+# Numpy is not absolutely necessary BUT highly recommended
+# GPU: Numpy not improve performance, and PyTorch handle it with highly optimized C++ and CUDA backend.
+# CPU: RECOMMENDED. NumPy handle for fast tensor-to-array conversions, and It's very fast.
+numpy

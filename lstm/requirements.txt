@@ -1,0 +1,13 @@
+# Use PyTorch's wheelhouse as an additional source
+--extra-index-url https://download.pytorch.org/whl/cu128
+
+# PyTorch libraries
+torch
+#torchvision
+#torchaudio
+
+# Numpy
+numpy
+tqdm
+jiwer
+python-levenshtein
