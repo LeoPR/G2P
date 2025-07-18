@@ -1,5 +1,4 @@
-# G2P_inference.py (Final Synchronized Version)
-# -------------------------
+
 import torch
 import argparse
 import random
@@ -13,7 +12,7 @@ CPU_THREADS_POWER = 0.9
 __cpu_threads_total = int(CPU_THREADS * CPU_THREADS_POWER)
 torch.set_num_threads(__cpu_threads_total)
 
-# Import the final, correct components
+
 from G2P import Encoder, Decoder, Seq2Seq
 from G2P_utils import Vocabulary, tokenize_source_text, PHONETIC_FEATURE_MAP, calculate_feature_distance
 
@@ -33,10 +32,9 @@ class G2PInference:
         params = checkpoint['params']
         params['input_dim'], params['output_dim'] = len(self.src_vocab), len(self.trg_vocab)
 
-        # [CORRECTED] Pass the 'bidirectional' flag from the loaded parameters.
         encoder = Encoder(
             params['input_dim'], params['enc_emb_dim'], params['hid_dim'], params['n_layers'],
-            params['enc_dropout'], bidirectional=params.get('bidirectional_encoder', True)  # Safely get the flag
+            params['enc_dropout'], bidirectional=params.get('bidirectional_encoder', True)
         )
         decoder = Decoder(
             params['output_dim'], params['dec_emb_dim'], params['hid_dim'], params['n_layers'],
@@ -54,7 +52,7 @@ class G2PInference:
         tokens = ['<sos>'] + tokenize_source_text(source_string) + ['<eos>']
         numericalized_tokens = [self.src_vocab.stoi.get(t, self.src_vocab.stoi['<unk>']) for t in tokens]
         src_tensor = torch.LongTensor(numericalized_tokens).unsqueeze(1).to(self.device)
-        # The model's predict method now joins tokens with a space.
+
         phonetic_translation = self.model.predict(src_tensor, self.src_vocab, self.trg_vocab)
         return phonetic_translation
 
@@ -74,7 +72,6 @@ def evaluate_performance(g2p_instance: G2PInference, data_pairs: list, lang_tag:
         all_refs.append(true_ipa_str)
         all_hyps.append(pred_ipa_str)
 
-        # For our custom distance metrics, we work with the token lists.
         lev_distance = Levenshtein.distance(pred_ipa_tokens, true_ipa_tokens)
         feature_dist, errors = calculate_feature_distance(pred_ipa_tokens, true_ipa_tokens, PHONETIC_FEATURE_MAP)
 
@@ -90,7 +87,6 @@ def evaluate_performance(g2p_instance: G2PInference, data_pairs: list, lang_tag:
             if len(bad_samples) < num_examples_to_show:
                 bad_samples.append(f"{sample} (Feat. Dist: {feature_dist}, Errors: {errors})")
 
-    # [CORRECTED] jiwer.wer calculates Word Error Rate (which is now Phoneme Error Rate)
     phoneme_error_rate = cer(all_refs, all_hyps) * 100
     word_accuracy = (correct_predictions / len(data_pairs)) * 100 if data_pairs else 0
 
@@ -107,7 +103,7 @@ def evaluate_performance(g2p_instance: G2PInference, data_pairs: list, lang_tag:
     print("-" * 58)
 
 
-# --- MAIN EXECUTION BLOCK (Correct and unchanged) ---
+
 if __name__ == '__main__':
     CPU_THREADS = os.cpu_count();
     torch.set_num_threads(int(CPU_THREADS * 0.9))

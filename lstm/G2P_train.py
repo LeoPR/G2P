@@ -1,5 +1,3 @@
-# G2P_train.py (Final Synchronized Version)
-# -----------------------
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -18,7 +16,6 @@ from G2P_utils import (
 )
 
 
-# --- Helper Functions (unchanged and correct) ---
 def manage_checkpoints(model_save_path, model_prefix, max_to_keep):
     checkpoints = sorted(glob.glob(os.path.join(model_save_path, f'{model_prefix}*.pth')))
     if len(checkpoints) > max_to_keep:
@@ -96,7 +93,7 @@ def evaluate_fn(model, iterator, criterion, device):
 
 
 def main():
-    # --- Configuration ---
+
     CPU_THREADS = os.cpu_count();
     torch.set_num_threads(int(CPU_THREADS * 0.9))
     SEED = 42;
@@ -126,11 +123,9 @@ def main():
         src_vocab.stoi["<und>:"] = new_idx;
         src_vocab.itos[new_idx] = "<und>:"
 
-    # [CORRECTED] Explicitly use the correct tokenizer for the target vocabulary.
     print("Building target vocabulary...")
     trg_vocab.build_vocabulary(trg_sentences, tokenizer=tokenize_phoneme_text)
 
-    # [CORRECTED] Pass the correct tokenizer functions to the G2PDataset.
     formatted_pairs = list(zip(src_sentences, trg_sentences))
     full_dataset = G2PDataset(
         data_pairs=formatted_pairs,

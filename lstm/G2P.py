@@ -10,7 +10,6 @@ __cpu_threads_total = int(CPU_THREADS * CPU_THREADS_POWER)
 torch.set_num_threads(__cpu_threads_total)
 #torch.set_num_interop_threads(__cpu_threads_total//4)
 
-# --- Componentes do Modelo ---
 
 class Encoder(nn.Module):
     def __init__(self, input_dim: int, emb_dim: int, hid_dim: int, n_layers: int, dropout: float, bidirectional: bool = True):
@@ -131,7 +130,6 @@ class Seq2Seq(nn.Module):
             for _ in range(max_len):
                 trg_tensor = torch.LongTensor([trg_indexes[-1]]).to(self.device)
 
-                # REMOVED: Redundant `with torch.no_grad():` block
                 output, hidden, cell = self.decoder(trg_tensor, hidden, cell)
 
                 pred_token = output.argmax(1).item()
@@ -141,7 +139,6 @@ class Seq2Seq(nn.Module):
                     break
 
         trg_tokens = [trg_vocab.itos[i] for i in trg_indexes]
-        # Return string, removing <sos> and <eos> tokens
         segment = " " if with_segment else ""
         return segment.join(trg_tokens[1:-1])
 

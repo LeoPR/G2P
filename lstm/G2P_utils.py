@@ -1,4 +1,3 @@
-# G2P_utils.py (Final Corrected Version)
 import torch
 from torch.utils.data import Dataset
 from collections import Counter
@@ -8,25 +7,20 @@ import numpy as np
 import Levenshtein
 import regex as re
 
-# --- Tokenizers ---
 SOURCE_TOKENIZER_REGEX = re.compile(r"<[a-z]{2,3}|-[a-z]{2,4}>:|>:|\X")
 
 
 def tokenize_source_text(text: str) -> list:
-    """Tokenizes source text with sub-word tags."""
     return SOURCE_TOKENIZER_REGEX.findall(text)
 
 
 def tokenize_phoneme_text(text: str) -> list:
-    """Tokenizes a space-segmented phoneme string."""
     return text.split()
 
 
-# --- Advanced Utilities ---
-# (get_phoneme_ngrams and create_stratified_split are unchanged and correct)
 def get_phoneme_ngrams(ipa_string, n_values=(2, 3)):
     ngrams = set()
-    phonemes = ipa_string.split()  # Use split for space-segmented strings
+    phonemes = ipa_string.split()
     for n in n_values:
         if len(phonemes) >= n:
             for i in range(len(phonemes) - n + 1):
@@ -72,10 +66,6 @@ def create_stratified_split(data_pairs, val_split_ratio=0.2):
 # (calculate_feature_distance is unchanged and correct)
 def calculate_feature_distance(phoneme_tokens1: list, phoneme_tokens2: list, feature_map: dict,
                                ins_del_penalty: int = 4) -> tuple[int, list]:
-    """
-    Calculates a phonetically-aware distance between two lists of phoneme tokens.
-    """
-    # Use Levenshtein's editops directly on the lists of tokens.
     ops = Levenshtein.editops(phoneme_tokens1, phoneme_tokens2)
 
     total_distance, error_descriptions = 0, []
@@ -104,8 +94,6 @@ def calculate_feature_distance(phoneme_tokens1: list, phoneme_tokens2: list, fea
     return total_distance, error_descriptions
 
 
-# --- Core Data Utilities ---
-# (Vocabulary, G2PDataset, PadCollate, set_reproducibility are unchanged and correct)
 class Vocabulary:
     def __init__(self, freq_threshold=1):
         self.itos = {0: "<pad>", 1: "<sos>", 2: "<eos>", 3: "<unk>"}
@@ -166,8 +154,6 @@ def set_reproducibility(seed, deterministic=True):
         print(
             "Running in non-deterministic mode."); torch.backends.cudnn.deterministic = False; torch.backends.cudnn.benchmark = True
 
-
-# --- [MODIFIED] Expanded Phonetic Feature Map ---
 
 # This version is compatible with the rich output from WikiPron.
 # It includes entries for structural tokens ('.', '(', ')', '_'), modifier tokens ('ː'),
@@ -237,13 +223,7 @@ PHONETIC_FEATURE_MAP = {
 }
 
 
-# --- [MODIFIED] Function using the new phonetic map ---
-
 def create_phonetic_embedding_matrix(phonetic_map, vocab, embedding_dim):
-    """
-    Creates an embedding matrix initialized with phonetic features.
-    """
-    # [MODIFIED] Get feature_dim safely from a known phoneme.
     feature_dim = len(phonetic_map['p'])
 
     embedding_matrix = torch.randn(len(vocab), embedding_dim) * 0.01
