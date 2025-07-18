@@ -8,7 +8,7 @@ import sys
 import glob
 import matplotlib.pyplot as plt
 
-# [MODIFIED] Import the new target tokenizer
+
 from G2P import Encoder, Decoder, Seq2Seq
 from G2P_utils import (
     Vocabulary, G2PDataset, PadCollate, tokenize_source_text, tokenize_phoneme_text,
